@@ -1,0 +1,25 @@
+# Folders
+/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+# Java class files
+*.class
+*.com
+*.dll
+*.exe
+*.o
+*.so
