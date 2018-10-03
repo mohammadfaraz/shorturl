@@ -11,6 +11,7 @@
 
   <artifactId>shorturl-shared</artifactId>
   <groupId>com.shorturl.shared</groupId>
+  <packaging>pom</packaging>
 
   <modules>
     <module>util</module>

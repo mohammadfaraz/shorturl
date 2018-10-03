@@ -2,29 +2,40 @@ package com.shorturl.service.core.data.record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import java.util.Date;
 
 import com.shorturl.shared.data.jpa.entity.KeyedEntity;
-
+/*, uniqueConstraints = {
+    @UniqueConstraint(columnNames = { "old_url", "custom_id" }),
+}*/
 @Entity
-@Table(name = "url_details", uniqueConstraints = {
-    @UniqueConstraint(columnNames = { "old_url", "alias", "custom_id" }),
-})
+@Table(name = "url_details")
 public class ShortURLRecord extends KeyedEntity {
 
-  @Column(nullable = false, unique = true)
+  @Lob
+  @Column(name = "old_url", nullable = false, unique = true)
   private String oldUrl;
-
-  @Column(nullable = false, unique = true)
-  private String alias;
 
   @Column(name = "custom_id",nullable = false, unique = true)
   private Long customId;
 
+  @Column(nullable = false)
   private Date expirationTime;
+
+  @Column(nullable = false)
+  private boolean active = true;
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
   public Date getExpirationTime() {
     return expirationTime;
@@ -42,14 +53,6 @@ public class ShortURLRecord extends KeyedEntity {
     this.oldUrl = oldUrl;
   }
 
-  public String getAlias() {
-    return alias;
-  }
-
-  public void setAlias(String alias) {
-    this.alias = alias;
-  }
-
   public Long getCustomId() {
     return customId;
   }
@@ -60,7 +63,7 @@ public class ShortURLRecord extends KeyedEntity {
 
   @Override
   public String toString() {
-    return "ShortURLRecord [" + "alias='" + alias + '\'' + ", customId=" + customId + ", oldUrl='"
-        + oldUrl + '\'' + ']';
+    return "ShortURLRecord [" + "active=" + active + ", customId=" + customId + ", expirationTime="
+        + expirationTime + ", oldUrl='" + oldUrl + '\'' + ']';
   }
 }

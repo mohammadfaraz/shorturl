@@ -10,14 +10,8 @@
 
   <groupId>com.shorturl.service.core</groupId>
   <artifactId>shorturl-service-core</artifactId>
-  <packaging>pom</packaging>
 
   <dependencies>
-    <dependency>
-      <groupId>com.shorturl.shared</groupId>
-      <artifactId>shorturl-shared</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
     <dependency>
       <groupId>com.shorturl.shared.util</groupId>
       <artifactId>shorturl-shared-util</artifactId>
@@ -32,10 +26,15 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
+    <dependency>
+      <groupId>net.sf.dozer</groupId>
+      <artifactId>dozer</artifactId>
+      <version>5.4.0</version>
+    </dependency>
   </dependencies>
 
   <build>
-    <finalName>shorturl-core-service</finalName>
+    <finalName>shorturl-service-core</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @PropertySource(value = {
-		"file:shorturl-service/src/main/resources/application.properties"
+		"file:service/core/src/main/resources/application.properties"
 })
 public class ShorturlApplication {
 

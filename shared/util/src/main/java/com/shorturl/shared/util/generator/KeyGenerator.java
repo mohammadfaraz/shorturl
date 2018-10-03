@@ -10,6 +10,10 @@ public class KeyGenerator {
   public KeyGenerator() {
   }
 
+  public static Long getUniqueCustomKey() {
+    return getUniqueRandomKey(CUSTOM_ID_SIZE);
+  }
+
   private static Long getUniqueRandomKey(int size) {
     Long initials = 2L;
     Long randomPart = Long.valueOf(RandomStringUtils.randomNumeric(size));
