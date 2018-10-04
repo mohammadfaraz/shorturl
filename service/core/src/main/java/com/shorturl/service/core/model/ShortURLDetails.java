@@ -4,16 +4,16 @@ import java.util.Date;
 
 public class ShortURLDetails {
 
-  private String alias;
+  private String url;
 
   private Date expirationTime;
 
-  public String getAlias() {
-    return alias;
+  public String getUrl() {
+    return url;
   }
 
-  public void setAlias(String alias) {
-    this.alias = alias;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
   public Date getExpirationTime() {
@@ -26,7 +26,7 @@ public class ShortURLDetails {
 
   @Override
   public String toString() {
-    return "ShortURLDetails [" + "alias='" + alias + '\'' + ", expirationTime=" + expirationTime
+    return "ShortURLDetails [" + "expirationTime=" + expirationTime + ", url='" + url + '\''
         + ']';
   }
 }

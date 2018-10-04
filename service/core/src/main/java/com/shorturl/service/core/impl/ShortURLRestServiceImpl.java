@@ -58,41 +58,60 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
     if (shortURLObjectCache == null) {
       shortURLRecord = shortURLRepository
           .findByOldUrlAndActive(urlCreationRequest.getOldUrl(), true);
-      if (shortURLRecord != null) {
-        shortURLObjectCache = populateshortURLObjectCache(shortURLRecord);
-      }
+    } else {
+      shortURLRecord = shortURLObjectCache.getShortURLRecord();
     }
 
     /*entry not found in db. Concluding asnew entry. Initiate a insertion*/
-    if (shortURLObjectCache == null) {
+    if (shortURLRecord == null) {
       shortURLRecord = mapper.map(urlCreationRequest, ShortURLRecord.class);
       shortURLRecord.setCustomId(KeyGenerator.getUniqueCustomKey());
       try {
         shortURLRecord = shortURLRepository.save(shortURLRecord);
-        shortURLObjectCache = populateshortURLObjectCache(shortURLRecord);
       } catch (Throwable e) {
         urlCreationResponse.setHttpStatus(HttpStatus.CONFLICT);
         return urlCreationResponse;
       }
     }
-    urlCreationResponse = mapper
-        .map(shortURLObjectCache.getShortURLRecord(), URLCreationResponse.class);
-    urlCreationResponse.setAlias(BaseConvertor.encode((long) characterStream.length(),
-        shortURLObjectCache.getShortURLRecord().getCustomId(), characterStream));
+    urlCreationResponse = mapper.map(shortURLRecord, URLCreationResponse.class);
+    urlCreationResponse.setAlias(BaseConvertor
+        .encode((long) characterStream.length(), shortURLRecord.getCustomId(), characterStream));
+
+    populateShortURLObjectCache(urlCreationResponse.getAlias(), shortURLRecord);
+
     urlCreationResponse.setHttpStatus(HttpStatus.CREATED);
     return urlCreationResponse;
   }
 
   @Override
   public ShortURLDetails getCorrespondingURL(@RequestParam(value = "alias") String alias) {
-    return null;
+    ShortURLDetails shortURLDetails = new ShortURLDetails();
+    ShortURLRecord shortURLRecord;
+    if (alias == null) {
+      return null;
+    }
+    ShortURLObjectCache shortURLObjectCache = localCache.get(alias);
+    if (shortURLObjectCache == null) {
+      Long customId = BaseConvertor.decode((long) characterStream.length(), alias, characterStream);
+      shortURLRecord = shortURLRepository.findByCustomIdAndActive(customId, true);
+    } else {
+      shortURLRecord = shortURLObjectCache.getShortURLRecord();
+    }
+    if (shortURLRecord == null) {
+      return null;
+    }
+
+    shortURLDetails.setExpirationTime(shortURLRecord.getExpirationTime());
+    shortURLDetails.setUrl(shortURLRecord.getOldUrl());
+    return shortURLDetails;
   }
 
-  private ShortURLObjectCache populateshortURLObjectCache(ShortURLRecord shortURLRecord) {
+  private ShortURLObjectCache populateShortURLObjectCache(String alias,
+      ShortURLRecord shortURLRecord) {
     ShortURLObjectCache shortURLObjectCache = new ShortURLObjectCache();
     shortURLObjectCache.setAccessedOn(new Date());
     shortURLObjectCache.setShortURLRecord(shortURLRecord);
-    localCache.put(shortURLRecord.getOldUrl(), shortURLObjectCache);
+    localCache.put(alias, shortURLObjectCache);
     return shortURLObjectCache;
   }
 

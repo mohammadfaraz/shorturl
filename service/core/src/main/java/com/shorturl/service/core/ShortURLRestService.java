@@ -16,7 +16,7 @@ public interface ShortURLRestService {
   @RequestMapping(value = "createAlias", method = RequestMethod.POST)
   URLCreationResponse createAlias(@RequestBody URLCreationRequest urlCreationRequest);
 
-  @RequestMapping(value = "getAlias", method = RequestMethod.GET)
+  @RequestMapping(value = "getURLByAlias", method = RequestMethod.GET)
   ShortURLDetails getCorrespondingURL(@RequestParam(value = "alias") String alias);
 
 }
