@@ -4,6 +4,9 @@ import java.util.stream.IntStream;
 
 public class StreamGenerator {
 
+  private StreamGenerator() {
+  }
+
   public static String getBase62Stream() {
     StringBuilder charStream = new StringBuilder();
     IntStream.range(48, 123).forEach(number -> {

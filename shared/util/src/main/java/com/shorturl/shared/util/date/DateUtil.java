@@ -8,6 +8,9 @@ import java.util.TimeZone;
 
 public class DateUtil {
 
+  private DateUtil() {
+  }
+
   public static Date convertLocalDateTimeToDate(LocalDateTime dateTime, TimeZone timeZone) {
     return Date.from(dateTime.atZone(timeZone.toZoneId()).toInstant());
   }

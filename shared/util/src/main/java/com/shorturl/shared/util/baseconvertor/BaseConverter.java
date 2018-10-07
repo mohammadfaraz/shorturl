@@ -2,7 +2,10 @@ package com.shorturl.shared.util.baseconvertor;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BaseConvertor {
+public class BaseConverter {
+
+  private BaseConverter() {
+  }
 
   /**
    * Converts from base 10 to any base

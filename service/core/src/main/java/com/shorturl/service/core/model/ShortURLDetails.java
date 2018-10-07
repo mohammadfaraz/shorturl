@@ -26,7 +26,6 @@ public class ShortURLDetails {
 
   @Override
   public String toString() {
-    return "ShortURLDetails [" + "expirationTime=" + expirationTime + ", url='" + url + '\''
-        + ']';
+    return "ShortURLDetails [" + "expirationTime=" + expirationTime + ", url='" + url + '\'' + ']';
   }
 }

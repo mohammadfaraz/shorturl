@@ -1,19 +1,16 @@
 package com.shorturl.service.core.impl;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 
 import com.shorturl.service.core.ShortURLRestService;
 import com.shorturl.service.core.data.record.ShortURLRecord;
 import com.shorturl.service.core.data.repository.ShortURLRepository;
 import com.shorturl.service.core.model.ShortURLDetails;
-import com.shorturl.service.core.model.ShortURLObjectCache;
 import com.shorturl.service.core.model.URLCreationRequest;
 import com.shorturl.service.core.model.URLCreationResponse;
-import com.shorturl.shared.util.baseconvertor.BaseConvertor;
+import com.shorturl.shared.cache.LRUCache.LocalCache;
+import com.shorturl.shared.util.baseconvertor.BaseConverter;
 import com.shorturl.shared.util.date.DateUtil;
 import com.shorturl.shared.util.generator.KeyGenerator;
 import com.shorturl.shared.util.generator.StreamGenerator;
@@ -38,7 +35,7 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
 
   private static final String characterStream = StreamGenerator.getBase62Stream();
 
-  private Map<String, ShortURLObjectCache> localCache = new HashMap<>(2000);
+  private LocalCache<String, ShortURLRecord> localCache = new LocalCache<>(1300);
 
   @Transactional(readOnly = false)
   @Override
@@ -49,20 +46,17 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
     if (urlCreationResponse.getHttpStatus() != null) {
       return urlCreationResponse;
     }
-    ShortURLRecord shortURLRecord;
 
     /*look for entry in local cache*/
-    ShortURLObjectCache shortURLObjectCache = localCache.get(urlCreationRequest.getOldUrl());
+    ShortURLRecord shortURLRecord = localCache.get(urlCreationRequest.getOldUrl());
 
     /*entry not found in local cache look in db*/
-    if (shortURLObjectCache == null) {
+    if (shortURLRecord == null) {
       shortURLRecord = shortURLRepository
           .findByOldUrlAndActive(urlCreationRequest.getOldUrl(), true);
-    } else {
-      shortURLRecord = shortURLObjectCache.getShortURLRecord();
     }
 
-    /*entry not found in db. Concluding asnew entry. Initiate a insertion*/
+    /*entry not found in db. Concluding as new entry. Initiate a insertion*/
     if (shortURLRecord == null) {
       shortURLRecord = mapper.map(urlCreationRequest, ShortURLRecord.class);
       shortURLRecord.setCustomId(KeyGenerator.getUniqueCustomKey());
@@ -74,10 +68,10 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
       }
     }
     urlCreationResponse = mapper.map(shortURLRecord, URLCreationResponse.class);
-    urlCreationResponse.setAlias(BaseConvertor
+    urlCreationResponse.setAlias(BaseConverter
         .encode((long) characterStream.length(), shortURLRecord.getCustomId(), characterStream));
 
-    populateShortURLObjectCache(urlCreationResponse.getAlias(), shortURLRecord);
+    localCache.put(urlCreationResponse.getAlias(), shortURLRecord);
 
     urlCreationResponse.setHttpStatus(HttpStatus.CREATED);
     return urlCreationResponse;
@@ -86,33 +80,20 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
   @Override
   public ShortURLDetails getCorrespondingURL(@RequestParam(value = "alias") String alias) {
     ShortURLDetails shortURLDetails = new ShortURLDetails();
-    ShortURLRecord shortURLRecord;
     if (alias == null) {
       return null;
     }
-    ShortURLObjectCache shortURLObjectCache = localCache.get(alias);
-    if (shortURLObjectCache == null) {
-      Long customId = BaseConvertor.decode((long) characterStream.length(), alias, characterStream);
+    ShortURLRecord shortURLRecord = localCache.get(alias);
+    if (shortURLRecord == null) {
+      Long customId = BaseConverter.decode((long) characterStream.length(), alias, characterStream);
       shortURLRecord = shortURLRepository.findByCustomIdAndActive(customId, true);
-    } else {
-      shortURLRecord = shortURLObjectCache.getShortURLRecord();
     }
     if (shortURLRecord == null) {
       return null;
     }
-
     shortURLDetails.setExpirationTime(shortURLRecord.getExpirationTime());
     shortURLDetails.setUrl(shortURLRecord.getOldUrl());
     return shortURLDetails;
-  }
-
-  private ShortURLObjectCache populateShortURLObjectCache(String alias,
-      ShortURLRecord shortURLRecord) {
-    ShortURLObjectCache shortURLObjectCache = new ShortURLObjectCache();
-    shortURLObjectCache.setAccessedOn(new Date());
-    shortURLObjectCache.setShortURLRecord(shortURLRecord);
-    localCache.put(alias, shortURLObjectCache);
-    return shortURLObjectCache;
   }
 
   private void validateRequest(URLCreationRequest urlCreationRequest,
@@ -122,21 +103,8 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
       urlCreationResponse.setHttpStatus(HttpStatus.CONFLICT);
     } else if (urlCreationRequest.getExpirationTime() == null) {
       urlCreationRequest.setExpirationTime(DateUtil
-          .convertLocalDateTimeToDate(LocalDateTime.now().plusDays(30), TimeZone.getDefault()));
+          .convertLocalDateTimeToDate(LocalDateTime.now().plusDays(30).with(LocalDateTime.MAX),
+              TimeZone.getDefault()));
     }
   }
-
-  /*@PostPersist
-  private void checkLocalCacheSize() {
-    Set keySet = new HashSet();
-    if (localCache.size() >= 1500) {
-      localCache.forEach((key, value) -> {
-        if(keySet.size() < 600) {
-
-        }
-
-      });
-    }
-
-  }*/
 }

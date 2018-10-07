@@ -7,7 +7,7 @@ public class KeyGenerator {
 
   private static final int CUSTOM_ID_SIZE = 9;
 
-  public KeyGenerator() {
+  private KeyGenerator() {
   }
 
   public static Long getUniqueCustomKey() {
