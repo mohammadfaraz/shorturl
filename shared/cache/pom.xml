@@ -13,4 +13,9 @@
   <groupId>com.shorturl.shared.cache</groupId>
   <packaging>pom</packaging>
 
+  <modules>
+    <module>eh-cache</module>
+    <module>local-cache</module>
+  </modules>
+
 </project>

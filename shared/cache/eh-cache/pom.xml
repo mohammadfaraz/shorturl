@@ -3,20 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>shorturl</artifactId>
-    <groupId>com.shorturl</groupId>
+    <artifactId>shorturl-shared</artifactId>
+    <groupId>com.shorturl.shared</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>shorturl-shared</artifactId>
-  <groupId>com.shorturl.shared</groupId>
+  <artifactId>shorturl-shared-cache-ehcache</artifactId>
+  <groupId>com.shorturl.shared.cache.ehcache</groupId>
   <packaging>pom</packaging>
-
-  <modules>
-    <module>util</module>
-    <module>data</module>
-    <module>cache</module>
-  </modules>
 
 </project>

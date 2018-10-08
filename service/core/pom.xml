@@ -32,8 +32,8 @@
       <version>5.4.0</version>
     </dependency>
     <dependency>
-      <groupId>com.shorturl.shared.cache</groupId>
-      <artifactId>shorturl-shared-cache</artifactId>
+      <groupId>com.shorturl.shared.cache.localcache</groupId>
+      <artifactId>shorturl-shared-cache-local-cache</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
