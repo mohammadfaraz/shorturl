@@ -1,7 +1,9 @@
 package com.shorturl.service.core.impl;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import com.shorturl.service.core.ShortURLRestService;
 import com.shorturl.service.core.data.record.ShortURLRecord;
@@ -103,7 +105,7 @@ public class ShortURLRestServiceImpl implements ShortURLRestService {
       urlCreationResponse.setHttpStatus(HttpStatus.CONFLICT);
     } else if (urlCreationRequest.getExpirationTime() == null) {
       urlCreationRequest.setExpirationTime(DateUtil
-          .convertLocalDateTimeToDate(LocalDateTime.now().plusDays(30).with(LocalDateTime.MAX),
+          .convertLocalDateTimeToDate(LocalDateTime.now().plusDays(30).with(LocalTime.MAX),
               TimeZone.getDefault()));
     }
   }
